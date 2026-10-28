@@ -1,6 +1,13 @@
 import { clearSession, getToken } from '@/lib/auth';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+// Overridable at build time so a deployed backend can be targeted without
+// code changes: VITE_API_BASE_URL=https://my-backend.onrender.com/api
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+
+// Hash-based so the redirect also works when the app is served from a
+// sub-path on static hosting.
+const ADMIN_LOGIN_URL = `${import.meta.env.BASE_URL}#/admin/login`;
 
 function authHeaders(): Headers {
   const headers = new Headers();
@@ -12,7 +19,7 @@ function authHeaders(): Headers {
 async function saveResponseAsFile(response: Response, filename: string) {
   if (response.status === 401) {
     clearSession();
-    window.location.replace('/admin/login');
+    window.location.replace(ADMIN_LOGIN_URL);
     throw new Error('Your session has expired. Please sign in again.');
   }
   if (!response.ok) {
@@ -38,8 +45,8 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
   if (response.status === 401 && !path.startsWith('/auth/')) {
     clearSession();
-    if (!window.location.pathname.startsWith('/admin/login')) {
-      window.location.replace('/admin/login');
+    if (!window.location.hash.startsWith('#/admin/login')) {
+      window.location.replace(ADMIN_LOGIN_URL);
     }
     throw new Error('Your session has expired. Please sign in again.');
   }

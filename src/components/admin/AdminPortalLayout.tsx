@@ -40,7 +40,9 @@ const AdminPortalLayout: React.FC<AdminPortalLayoutProps> = ({ children }) => {
 
   const handleSignOut = () => {
     clearSession();
-    window.location.href = '/';
+    // Full page load so every cached admin view resets; the base path keeps
+    // this working when the app is served from a sub-path on static hosting.
+    window.location.replace(import.meta.env.BASE_URL);
   };
 
   const currentPage =
