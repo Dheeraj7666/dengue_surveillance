@@ -1,0 +1,90 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    scroll-behavior: smooth;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900;
+    transition: background-color 200ms ease, color 200ms ease;
+  }
+
+  html.dark body {
+    @apply bg-slate-950 text-slate-100;
+  }
+
+  /* Keep in-page anchors clear of the fixed landing-page navigation. */
+  section[id] {
+    scroll-margin-top: 5rem;
+  }
+
+  /* Numeric data reads better in tabular figures. */
+  table,
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::selection {
+    @apply bg-teal-600/20 text-inherit;
+  }
+}
+
+@layer utilities {
+  /* Slim, theme-aware scrollbars so long data tables look deliberate. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(148 163 184 / 0.5) transparent;
+  }
+
+  html.dark * {
+    scrollbar-color: rgb(71 85 105 / 0.6) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: rgb(148 163 184 / 0.45);
+    border-radius: 9999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+
+  html.dark *::-webkit-scrollbar-thumb {
+    background-color: rgb(71 85 105 / 0.6);
+    background-clip: content-box;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(100 116 139 / 0.7);
+    background-clip: content-box;
+  }
+}
