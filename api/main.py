@@ -3,9 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 from api.database import init_db
+from api.seed import seed_if_empty
 from api.routes import auth, submissions, analytics
 
 init_db()
+seed_if_empty()
 
 app = FastAPI(title="DengueCare AI API")
 

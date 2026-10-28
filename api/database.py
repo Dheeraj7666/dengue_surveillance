@@ -3,13 +3,33 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./api/data/denguecare.db"
+SQLITE_URL = "sqlite:///./api/data/denguecare.db"
+
+
+def _resolve_database_url() -> str:
+    """Prefer DATABASE_URL when the host provides one (e.g. Render Postgres),
+    otherwise fall back to the local SQLite file shipped in the repository."""
+    url = (os.getenv("DATABASE_URL") or "").strip()
+    if not url:
+        return SQLITE_URL
+    # Some providers still hand out the legacy postgres:// scheme, which
+    # SQLAlchemy 2.x rejects.
+    if url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql://", 1)
+    return url
+
+
+SQLALCHEMY_DATABASE_URL = _resolve_database_url()
+IS_SQLITE = SQLALCHEMY_DATABASE_URL.startswith("sqlite")
 
 # Ensure data directory exists
-os.makedirs(os.path.dirname(SQLALCHEMY_DATABASE_URL.replace("sqlite:///./", "")), exist_ok=True)
+if IS_SQLITE:
+    os.makedirs(os.path.dirname(SQLITE_URL.replace("sqlite:///./", "")), exist_ok=True)
 
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+    SQLALCHEMY_DATABASE_URL,
+    connect_args={"check_same_thread": False} if IS_SQLITE else {},
+    pool_pre_ping=True,
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

@@ -32,8 +32,10 @@ jobs:
         env:
           # Served from https://<user>.github.io/dengue_surveillance/
           VITE_BASE_PATH: /dengue_surveillance/
-          # Point this at a deployed API to make the dashboards live, e.g.
-          # VITE_API_BASE_URL: https://your-backend.onrender.com/api
+          # Repository variable pointing at the deployed API, e.g.
+          # https://denguecare-api.onrender.com/api
+          # Falls back to localhost so the workflow still builds without it.
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || 'http://localhost:8000/api' }}
         run: npm run build
 
       - uses: actions/configure-pages@v5

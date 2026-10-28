@@ -7,3 +7,5 @@ sqlalchemy==2.0.28
 python-multipart==0.0.9
 pydantic==2.6.3
 python-dotenv==1.0.1
+# Postgres driver, used when DATABASE_URL points at a managed database.
+psycopg2-binary==2.9.9

@@ -1,0 +1,35 @@
+# Render Blueprint - deploys the FastAPI backend so the GitHub Pages frontend
+# has a live API to talk to.
+#
+# After connecting this repo on render.com, set the repository variable
+# VITE_API_BASE_URL (Settings > Secrets and variables > Actions > Variables) to
+# https://<service-name>.onrender.com/api and re-run the Pages workflow.
+services:
+  - type: web
+    name: denguecare-api
+    runtime: python
+    plan: free
+    region: singapore
+    branch: main
+    buildCommand: pip install -r api/requirements.txt
+    startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      # scikit-learn 1.4.1 has no wheels for 3.13 yet, so build on 3.11.
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      # Signs admin session tokens. Generated once and kept out of the repo.
+      - key: AUTH_SECRET_KEY
+        generateValue: true
+      # Optional: attach a managed database so submissions survive restarts.
+      # Without it the app uses SQLite and reseeds the bundled dataset on boot.
+      # - key: DATABASE_URL
+      #   fromDatabase:
+      #     name: denguecare-db
+      #     property: connectionString
+
+# Uncomment together with DATABASE_URL above to provision managed Postgres.
+# databases:
+#   - name: denguecare-db
+#     plan: free
+#     region: singapore

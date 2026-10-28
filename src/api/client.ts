@@ -65,6 +65,13 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 export const apiClient = {
+  /** Fire-and-forget ping so a sleeping server starts waking before login. */
+  warmUp() {
+    fetch(`${API_BASE_URL}/health`).catch(() => {
+      // Offline or still waking; the real request will surface the error.
+    });
+  },
+
   // Auth
   async login(username: string, password: string) {
     return request<{ token: string; username: string }>('/auth/login', {
